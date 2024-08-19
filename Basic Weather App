@@ -1,0 +1,59 @@
+#                   Basic Weather App
+
+import requests
+
+
+def get_weather(city):
+    api_key = "1429dab92711e2f7ab9a28a17399800b"
+
+    base_url = f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={api_key}&units=metric"
+
+    try:
+
+        response = requests.get(base_url)
+
+        response.raise_for_status()
+
+        weather_data = response.json()
+
+
+        Temp = weather_data["main"]["temp"]
+        Humidity = weather_data["main"]["humidity"]
+        Description = weather_data["weather"][0]["description"]
+
+
+        return {
+            "temperature": Temp,
+            "humidity": Humidity,
+            "description": Description
+        }
+    except requests.exceptions.HTTPError as http_err:
+
+        if response.status_code == 404:
+            return f"Error: City '{city}' not found. Please check the spelling and try again."
+        else:
+            return f"HTTP error occurred: {http_err}"
+    except requests.exceptions.RequestException as req_err:
+
+        return f"Error: {req_err}"
+
+
+def main():
+    print("Basic Weather App")
+    location = input("Enter City : ")
+    weather = get_weather(location)
+
+
+    if isinstance(weather, dict):
+
+        print(f"Weather in {location}:")
+        print(f"Temperature: {weather['temperature']}°C")
+        print(f"Humidity: {weather['humidity']}%")
+        print(f"Condition: {weather['description']}")
+    else:
+
+        print(weather)
+
+
+
+main()
